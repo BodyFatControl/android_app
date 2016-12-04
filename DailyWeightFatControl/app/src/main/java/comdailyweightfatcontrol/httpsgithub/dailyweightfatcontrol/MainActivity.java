@@ -36,6 +36,7 @@ import com.github.mikephil.charting.data.ScatterDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import java.util.Iterator;
 
 import static android.R.attr.duration;
 import static android.widget.Toast.LENGTH_LONG;
@@ -47,56 +48,28 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        MySQLiteHelper sql = new MySQLiteHelper(this);
-        List<Point> p = sql.getFatLastMonth();
-
-        String abc = p.get(0).toString();
-        Toast.makeText(this, abc, LENGTH_LONG).show();
-
-
-
-        // in this example, a LineChart is initialized from xml
-        LineChart chart = (LineChart) findViewById(R.id.chart);
-
-//        int[][] dataObjects = {
-//            {0, 5},
-//            {1, 12},
-//            {2, 10},
-//            {3, 4},
-//            {4, 7}
-//        };
-
-        ArrayList<ArrayList<Integer>> dataObjects;
-        dataObjects = new ArrayList<ArrayList<Integer>>();
-        dataObjects.add(new ArrayList<Integer>());
-        dataObjects.add(new ArrayList<Integer>());
-        dataObjects.add(new ArrayList<Integer>());
-        dataObjects.add(new ArrayList<Integer>());
-        dataObjects.get(0).add(1);
-        dataObjects.get(0).add(10);
-        dataObjects.get(1).add(2);
-        dataObjects.get(1).add(12);
-        dataObjects.get(2).add(3);
-        dataObjects.get(2).add(6);
-        dataObjects.get(3).add(4);
-        dataObjects.get(3).add(18);
+        SkulptSQLiteHelper sql = new SkulptSQLiteHelper(this);
+        ArrayList<String> data = sql.getTotalFatLastMonth();
 
         List<Entry> entries = new ArrayList<Entry>();
+        for (int i = 0; i < data.size(); i += 2) {
 
-        for (ArrayList<Integer> i : dataObjects) {
-
-            // turn your data into Entry objects
-            entries.add(new Entry(i.get(0),i.get(1)));
+            //turn your data into Entry objects
+            entries.add(new Entry((float) i, new Float(data.get(i+1)).floatValue()));
         }
 
-        LineDataSet dataSet = new LineDataSet(entries, "Label xxx"); // add entries to dataset
+        // add entries to dataset
+        LineDataSet dataSet = new LineDataSet(entries, "Time");
         dataSet.setColor(Color.rgb(240, 238, 70));
         //dataSet.setValueTextColor(...); // styling, ...
 
         LineData lineData = new LineData(dataSet);
+
+        // in this example, a LineChart is initialized from xml
+        LineChart chart = (LineChart) findViewById(R.id.chart);
         chart.setData(lineData);
         chart.invalidate(); // refresh
 
-        finish();
+        //finish();
     }
 }
