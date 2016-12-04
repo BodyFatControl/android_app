@@ -1,8 +1,11 @@
 package comdailyweightfatcontrol.httpsgithub.dailyweightfatcontrol;
 
 import android.graphics.Color;
+import android.graphics.Point;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Toast;
+
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import java.util.ArrayList;
@@ -34,12 +37,23 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
+import static android.R.attr.duration;
+import static android.widget.Toast.LENGTH_LONG;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        MySQLiteHelper sql = new MySQLiteHelper(this);
+        List<Point> p = sql.getFatLastMonth();
+
+        String abc = p.get(0).toString();
+        Toast.makeText(this, abc, LENGTH_LONG).show();
+
+
 
         // in this example, a LineChart is initialized from xml
         LineChart chart = (LineChart) findViewById(R.id.chart);
@@ -82,5 +96,7 @@ public class MainActivity extends AppCompatActivity {
         LineData lineData = new LineData(dataSet);
         chart.setData(lineData);
         chart.invalidate(); // refresh
+
+        finish();
     }
 }
