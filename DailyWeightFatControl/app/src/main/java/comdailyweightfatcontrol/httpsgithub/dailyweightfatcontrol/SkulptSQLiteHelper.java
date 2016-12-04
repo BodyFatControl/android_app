@@ -12,9 +12,13 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.lang.String;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import static android.widget.Toast.LENGTH_LONG;
 
@@ -38,16 +42,24 @@ public class SkulptSQLiteHelper extends SQLiteOpenHelper {
 
     }
 
+    private boolean isSameDay (String dateA, String dateB) {
+        String a = dateA.substring(0, 10);
+        String b = dateB.substring(0, 10);
+
+        return a.equals(b);
+    }
+
+
     public void SkulptPrepareDatabase() {
-        try {
-            String[] cmd = {"su", "-c", "cp", "-rf", "/data/data/com.skulpt.aim/databases/Measurements.db", "/sdcard/Download/skulpt-measurements.db"};
-            Process process = new ProcessBuilder(cmd).start();
-            process.waitFor();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            String[] cmd = {"su", "-c", "cp", "-rf", "/data/data/com.skulpt.aim/databases/Measurements.db", "/sdcard/Download/skulpt-measurements.db"};
+//            Process process = new ProcessBuilder(cmd).start();
+//            process.waitFor();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public ArrayList<String> getTotalFatLastMonth() {
@@ -61,12 +73,45 @@ public class SkulptSQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = SQLiteDatabase.openDatabase("/sdcard/Download/skulpt-measurements.db", null, SQLiteDatabase.OPEN_READONLY);
         Cursor cursor = db.rawQuery(query, null);
 
-        // read the data from the database
-        if (cursor.moveToFirst()) {
-            do {
-                data.add(cursor.getString(cursor.getColumnIndex("datetime")));
-                data.add(cursor.getString(cursor.getColumnIndex("fat")));
-            } while (cursor.moveToNext());
+        // read the data from the database and average all the values on the same day
+        float fat_sum = 0;
+        String date = null;
+        String newDate = null;
+        String last_date = null;
+        String fat = null;
+        int first_loop = 1;
+        int loop_counter = 0;
+        int i = 0;
+        cursor.moveToFirst();
+        int counter = cursor.getCount();
+
+        for ( ; counter > 0; ) {
+
+            if (cursor.isAfterLast()) break;
+            date = cursor.getString(cursor.getColumnIndex("datetime"));
+            fat = cursor.getString(cursor.getColumnIndex("fat"));
+            fat_sum = Float.valueOf(fat);
+            loop_counter++;
+
+            while (true) {
+                cursor.moveToNext();
+                if (cursor.isAfterLast()) break;
+                newDate = cursor.getString(cursor.getColumnIndex("datetime"));
+                if (isSameDay(date, newDate)) {
+                    fat_sum += Float.valueOf(cursor.getString(cursor.getColumnIndex("fat")));
+                    loop_counter++;
+                    date = newDate;
+                }
+                else {
+                    //cursor.moveToLast();
+                    fat = String.valueOf(fat_sum / loop_counter);
+                    loop_counter = 0;
+                    break;
+                }
+            }
+
+            data.add(date);
+            data.add(fat);
         }
 
         // return data

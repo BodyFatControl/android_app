@@ -52,10 +52,11 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> data = sql.getTotalFatLastMonth();
 
         List<Entry> entries = new ArrayList<Entry>();
+        float loop_counter = 0;
         for (int i = 0; i < data.size(); i += 2) {
-
             //turn your data into Entry objects
-            entries.add(new Entry((float) i, new Float(data.get(i+1)).floatValue()));
+            entries.add(new Entry(loop_counter, new Float(data.get(i+1)).floatValue()));
+            loop_counter++;
         }
 
         // add entries to dataset
