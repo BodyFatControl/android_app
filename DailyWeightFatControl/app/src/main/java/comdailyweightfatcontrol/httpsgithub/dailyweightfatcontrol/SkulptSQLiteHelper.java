@@ -51,15 +51,15 @@ public class SkulptSQLiteHelper extends SQLiteOpenHelper {
 
 
     public void SkulptPrepareDatabase() {
-//        try {
-//            String[] cmd = {"su", "-c", "cp", "-rf", "/data/data/com.skulpt.aim/databases/Measurements.db", "/sdcard/Download/skulpt-measurements.db"};
-//            Process process = new ProcessBuilder(cmd).start();
-//            process.waitFor();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            String[] cmd = {"su", "-c", "cp", "-rf", "/data/data/com.skulpt.aim/databases/Measurements.db", "/sdcard/Download/skulpt-measurements.db"};
+            Process process = new ProcessBuilder(cmd).start();
+            process.waitFor();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public ArrayList<String> getTotalFatLastMonth() {
@@ -86,7 +86,6 @@ public class SkulptSQLiteHelper extends SQLiteOpenHelper {
         int counter = cursor.getCount();
 
         for ( ; counter > 0; ) {
-
             if (cursor.isAfterLast()) break;
             date = cursor.getString(cursor.getColumnIndex("datetime"));
             fat = cursor.getString(cursor.getColumnIndex("fat"));
@@ -103,13 +102,11 @@ public class SkulptSQLiteHelper extends SQLiteOpenHelper {
                     date = newDate;
                 }
                 else {
-                    //cursor.moveToLast();
                     fat = String.valueOf(fat_sum / loop_counter);
                     loop_counter = 0;
                     break;
                 }
             }
-
             data.add(date);
             data.add(fat);
         }

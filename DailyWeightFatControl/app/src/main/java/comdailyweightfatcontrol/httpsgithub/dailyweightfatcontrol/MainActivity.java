@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.Entry;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,13 +62,28 @@ public class MainActivity extends AppCompatActivity {
 
         // add entries to dataset
         LineDataSet dataSet = new LineDataSet(entries, "Time");
-        dataSet.setColor(Color.rgb(240, 238, 70));
-        //dataSet.setValueTextColor(...); // styling, ...
+        dataSet.setColor(Color.rgb(0, 0, 0));
+
+        dataSet.setCircleRadius(1);
+        dataSet.setCubicIntensity(0.2f);
+        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
 
         LineData lineData = new LineData(dataSet);
 
         // in this example, a LineChart is initialized from xml
         LineChart chart = (LineChart) findViewById(R.id.chart);
+
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setPosition(XAxisPosition.BOTTOM);
+        xAxis.setTextColor(Color.GRAY);
+        xAxis.setDrawAxisLine(false);
+        xAxis.setDrawGridLines(true);
+        xAxis.setGridLineWidth(1);
+
+        // no description text
+        chart.getDescription().setEnabled(false);
+
+        chart.setAutoScaleMinMaxEnabled(false);
         chart.setData(lineData);
         chart.invalidate(); // refresh
 
